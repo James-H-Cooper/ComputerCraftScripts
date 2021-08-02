@@ -3,6 +3,7 @@
 -- By James Cooper
 -- A script to stripmine an area. 
 -- Runs SimpleMine.lua at every depth up to the given argument
+-- For use with a Mining Turtle
 ------------------------------
 
 

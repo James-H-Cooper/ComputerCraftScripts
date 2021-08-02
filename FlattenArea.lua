@@ -3,6 +3,7 @@
 -- By James Cooper
 -- A Script that Flattens an area infront of the turtle
 -- Start the turtle in the back left corner of the area to be flattened. 
+-- For use with a Mining Turtle
 ------------------------------
 
 local INVENTORY_SIZE = 16

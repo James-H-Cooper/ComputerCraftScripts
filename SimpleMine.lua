@@ -4,6 +4,7 @@
 -- A Script that digs down a specified number of blocks then starts mining in the direction it's facing before returning home. 
 -- Will head home if it travels more than MAX_DISTANCE blocks, it's running low on fuel or it's out of space
 -- Note that if the turtle leaves a loaded chunk it shuts down and the script will stop running, this may lead to lost turtles
+-- For use with a Mining Turtle
 ------------------------------
 
 -- Constants

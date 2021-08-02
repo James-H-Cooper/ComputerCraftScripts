@@ -3,6 +3,7 @@
 -- By James Cooper
 -- A Script that Farms wheat seeds in a square
 -- Starting position should be on a chest 1 block back from the lower left corner of the farm
+-- For use with a Farming Turtle
 ------------------------------
 
 -- Constants
