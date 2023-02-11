@@ -3,10 +3,17 @@
 -- By James Cooper
 -- A Script that Farms wheat seeds in a square
 -- Starting position should be on a chest 1 block back from the lower left corner of the farm
+-- Ensure the only non-solid block surronding the turtle is the direction of the farm
 -- For use with a Farming Turtle
 ------------------------------
 
+-- Config vairables 
+local HOME_LOCATION = {0,0,0} -- Set this to the start of the farm
+local FARM_SIZE = 0 -- The size of the farm, can be overridden using parameters but should be set here if run as a startup script
+local IS_GPS_ENABLED = false -- Does this turtle have access to a GPS network
+
 -- Constants
+local GO_TO_LOCATION_PATH = "ComputerCraftScripts/Helpers/GoToLocation.lua"
 local SEED_TYPE = "minecraft:wheat_seeds"
 local COAL_TYPE = "minecraft:coal"
 local CROP_NAME = "minecraft:wheat"
@@ -19,27 +26,15 @@ function init()
     if #arg==1 then 
         return tonumber(arg[1])
     else
-        return 0 
+        return FARM_SIZE
     end
 end
 
--- Main logic
-function main(square)
-    -- Keep looping until we're fully prepared with mats
-    while is_prepared(square) == false do
-        sleep(TIMEOUT_INTERVAL)    
-    end
 
-    farming_loop(square)
-    --The logic to come home depends on which side of the farm we end on which is based on if it's an odd or even sided square
-    if math.mod(square,2) == 0 then
-        come_home_even(square)
-    else
-        come_home_odd(square)
+function find_starting_direction()
+    while turtle.detect() do
+        turtle.turnRight()
     end
-
-    dump_inventory(square)
-    return true
 end
 
 -- Check if we're prepared to start or if we're missing mats
@@ -76,7 +71,7 @@ function current_inventory_check()
         end
     end
 
-    return seedsCount
+    return seeds
 end
 
 --Farm the square given
@@ -128,7 +123,7 @@ end
 function plant_crop()
     for i = 1, INVENTORY_SIZE do
         local item = turtle.getItemDetail(i)
-        if item.name == SEED_TYPE then
+        if item ~= nil and item.name == SEED_TYPE then
             turtle.select(i)
             turtle.placeDown()
             return
@@ -183,12 +178,44 @@ function dump_inventory(square)
     end
 end
 
+-- Main logic
+function main(square)
+    -- Keep looping until we're fully prepared with mats
+    while is_prepared(square) == false do
+        sleep(TIMEOUT_INTERVAL)    
+    end
+
+    find_starting_direction()
+    farming_loop(square)
+
+    --Go back home
+    if IS_GPS_ENABLED then
+        shell.run(GO_TO_LOCATION_PATH, HOME_LOCATION[1], HOME_LOCATION[2], HOME_LOCATION[3])
+    else
+        --The logic to come home depends on which side of the farm we end on which is based on if it's an odd or even sided square
+        if math.mod(square, 2) == 0 then
+            come_home_even(square)
+        else
+            come_home_odd(square)
+        end
+    end
+
+    dump_inventory(square)
+    return true
+end
+
 -- Starting logic/loop -- 
 local square = init()
 if square < 1 then
     print("Invalid parameter, returning early")
     return false
 end
+
+--Ensure we start at home
+if IS_GPS_ENABLED then
+    shell.run(GO_TO_LOCATION_PATH, HOME_LOCATION[1], HOME_LOCATION[2], HOME_LOCATION[3])
+end
+
 print("Starting loop")
 while true do
     main(square)
