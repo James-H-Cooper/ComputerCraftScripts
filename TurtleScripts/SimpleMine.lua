@@ -8,7 +8,7 @@
 ------------------------------
 
 -- Constants
-local MAX_DISTANCE = 128 -- The maximum distance the turtle will travel before going home
+local MAX_DISTANCE = 100 -- The maximum distance the turtle will travel before going home
 local FUEL_BUFFER = 40 -- A buffer of surplus fuel to always keep, for safety.
 local INVENTORY_SIZE = 16
 local COAL_TYPE = "minecraft:coal"
@@ -20,26 +20,6 @@ function init()
     else
         return 0 
     end
-end
-
--- Main logic
--- Return a bool telling us whether or not we ended because we were out of space
-function main(depth)
-    print("Starting mining operation")
-    local distanceTravelled = 0
-    while (has_fuel(distanceTravelled) and has_space() and distanceTravelled < MAX_DISTANCE) do
-        -- TODO:: CHECK FOR GRAVEL/SAND AND MINE ALL OF THAT FIRST SO THAT DISTANCE TRAVELLED IS ACCURATE
-        if distanceTravelled < depth then
-            mine_down()
-        else
-            mine_forward()
-        end
-        distanceTravelled = distanceTravelled + 1
-    end
-    go_home(distanceTravelled, depth)
-    local was_out_of_space = not(has_space())
-    deposit_items()
-    return was_out_of_space
 end
 
 -- Consume all fuel in inventory then check if we have enough fuel to keep going 
@@ -131,6 +111,26 @@ function deposit_items()
     -- Finally turn again so that when we restart we're going the same way as the first run. 
     turtle.turnRight()
     turtle.turnRight()
+end
+
+-- Main logic
+-- Return a bool telling us whether or not we ended because we were out of space
+function main(depth)
+    print("Starting mining operation")
+    local distanceTravelled = 0
+    while (has_fuel(distanceTravelled) and has_space() and distanceTravelled < MAX_DISTANCE) do
+        -- TODO:: CHECK FOR GRAVEL/SAND AND MINE ALL OF THAT FIRST SO THAT DISTANCE TRAVELLED IS ACCURATE
+        if distanceTravelled < depth then
+            mine_down()
+        else
+            mine_forward()
+        end
+        distanceTravelled = distanceTravelled + 1
+    end
+    go_home(distanceTravelled, depth)
+    local was_out_of_space = not(has_space())
+    deposit_items()
+    return was_out_of_space
 end
 
 -- Starting logic/loop -- 
